@@ -1,7 +1,8 @@
 import { ImageResponse } from 'next/og';
 
+export const dynamic = 'force-static';
 // Route segment config
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 // Image metadata
 export const alt = 'Bara Zalat Monogram';

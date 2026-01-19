@@ -93,7 +93,10 @@ export default function Portfolio() {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        // On mobile, require a 250ms press before dragging starts
+        // On desktop (distance), it stays snappy
+        delay: 250,
+        tolerance: 5,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -117,7 +120,7 @@ export default function Portfolio() {
     switch (id) {
       case 'identity':
         return (
-          <div className="h-full bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8 flex flex-col justify-between hover:border-zinc-700 transition-colors group">
+          <div className="h-full bg-zinc-900/50 border border-zinc-800 rounded-3xl p-6 md:p-8 flex flex-col justify-between hover:border-zinc-700 transition-colors group">
             <div>
               <div className="flex items-center gap-3 mb-6">
                 <div className="relative">
@@ -127,7 +130,7 @@ export default function Portfolio() {
                 <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest">Available for hire</span>
               </div>
 
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">
+              <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-4">
                 Bara Zalat
               </h1>
               <p className="text-lg text-zinc-400 leading-relaxed max-w-md">
@@ -184,7 +187,7 @@ export default function Portfolio() {
             className="h-full bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8 hover:border-zinc-500 transition-all cursor-pointer group relative"
           >
             {/* Expand icon moved to bottom right */}
-            <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity text-indigo-400 bg-zinc-900/80 p-2 rounded-full border border-zinc-700 backdrop-blur-sm z-10">
+            <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-indigo-400 bg-zinc-900/80 p-2 rounded-full border border-zinc-700 backdrop-blur-sm z-10">
               <Maximize2 size={16} />
             </div>
 
@@ -217,7 +220,7 @@ export default function Portfolio() {
             className="h-full bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8 flex flex-col hover:border-zinc-500 transition-all cursor-pointer group relative"
           >
             {/* Expand icon */}
-            <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity text-indigo-400 bg-zinc-900/80 p-2 rounded-full border border-zinc-700 backdrop-blur-sm z-10">
+            <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-indigo-400 bg-zinc-900/80 p-2 rounded-full border border-zinc-700 backdrop-blur-sm z-10">
               <Maximize2 size={16} />
             </div>
 
@@ -314,7 +317,7 @@ export default function Portfolio() {
               <span className="text-xs font-mono text-zinc-500">STACK</span>
             </div>
             <div className="flex flex-wrap gap-2">
-              {['TypeScript', 'Rust', 'Next.js', 'Supabase', 'Flutter', 'Python'].map(tag => (
+              {['TypeScript', 'Rust', 'Next.js', 'Supabase', 'Flutter', 'Python','React','React Native'].map(tag => (
                 <span key={tag} className="px-3 py-1 bg-zinc-800 rounded-full text-xs font-medium text-zinc-300 border border-zinc-700">
                   {tag}
                 </span>
@@ -347,7 +350,7 @@ export default function Portfolio() {
             strategy={rectSortingStrategy}
           >
             {/* THE BENTO GRID */}
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[minmax(180px,auto)]">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[minmax(180px,auto)]">
               {items.map((item) => (
                 <SortableItem key={item.id} id={item.id} className={item.className}>
                   {renderBlockContent(item.id)}
@@ -690,13 +693,15 @@ function ModalOverlay({ id, onClose }: { id: string, onClose: () => void }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
-        className="bg-zinc-950 border border-zinc-800 w-full max-w-3xl max-h-[85vh] overflow-y-auto rounded-3xl shadow-2xl relative animate-in zoom-in-95 duration-200 no-scrollbar"
+        className="bg-zinc-950 border-t md:border border-zinc-800 w-full max-w-3xl max-h-[85vh] overflow-y-auto rounded-3xl shadow-2xl relative animate-in zoom-in-95 duration-200 no-scrollbar"
         onClick={handleContentClick}
       >
+        {/* Add a "grabber" for mobile feel */}
+    <div className="w-12 h-1.5 bg-zinc-800 rounded-full mx-auto mt-4 mb-2 md:hidden" />
         {/* Sticky Close Button */}
         <div className="sticky top-0 right-0 z-20 flex justify-end p-4 bg-gradient-to-b from-zinc-950 to-transparent">
           <button
