@@ -4,8 +4,9 @@ const nextConfig: NextConfig = {
   output: 'export', // Enables static export
   images: {
     unoptimized: true,
-  }, // This closing brace was missing
-  /* config options here */
+  }, 
+  basePath: '', 
+  assetPrefix: '',
 };
 
 export default nextConfig;
