@@ -1,15 +1,13 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Github,
   Linkedin,
   Mail,
-  ArrowUpRight,
   MapPin,
   Code2,
   Terminal,
-  Cpu,
   Layers,
   Globe,
   Award,
@@ -44,6 +42,89 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
+// --- Background Component (Glowing Waving Dots) ---
+function GlowingWaveBackground() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animationFrameId: number;
+    let time = 0;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Configuration
+    const gap = 20; // Distance between dots
+    const baseRadius = 1;
+    const waveSpeed = 0.07;
+
+    const render = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Create a subtle gradient for the dots
+      const cols = Math.ceil(canvas.width / gap);
+      const rows = Math.ceil(canvas.height / gap);
+
+      time += waveSpeed;
+
+      for (let i = 0; i < cols; i++) {
+        for (let j = 0; j < rows; j++) {
+          const x = i * gap;
+          const y = j * gap;
+
+          // Calculate wave effect based on position and time
+          // This creates a diagonal wave pattern
+          const wave = Math.sin(i * 0.2 + j * 0.2 + time) * 0.5 + 0.5;
+          
+          // Only draw if opacity is significant to save performance
+          if (wave > 0.1) {
+            ctx.beginPath();
+            // Radius pulses slightly with the wave
+            const radius = baseRadius + (wave * 1.5); 
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            
+            // Color: Indigo/Purple tint with varying opacity
+            // The glow comes from the opacity accumulation and color choice
+            ctx.fillStyle = `rgba(99, 102, 241, ${wave * 0.3})`; // Indigo-500 equivalent
+            ctx.fill();
+            
+            // Optional: Add a subtle glow effect (expensive on performance, use sparingly)
+            // ctx.shadowBlur = 4;
+            // ctx.shadowColor = 'rgba(99, 102, 241, 0.5)';
+          }
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      window.removeEventListener('resize', resize);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 z-0 pointer-events-none bg-zinc-950"
+      style={{ opacity: 0.8 }}
+    />
+  );
+}
+
 // --- Sortable Item Component ---
 function SortableItem(props: any) {
   const {
@@ -68,7 +149,10 @@ function SortableItem(props: any) {
       style={style}
       {...attributes}
       {...listeners}
-      className={`${props.className} cursor-grab active:cursor-grabbing touch-none outline-none focus:ring-2 focus:ring-indigo-500/50 rounded-3xl`}
+      // CHANGED: Removed 'touch-none' and replaced with 'touch-manipulation'
+      // 'touch-none' kills scrolling. 'touch-manipulation' allows scrolling 
+      // but prevents double-tap zoom, letting the dnd-kit delay handle the drag logic.
+      className={`${props.className} cursor-grab active:cursor-grabbing touch-manipulation outline-none focus:ring-2 focus:ring-indigo-500/50 rounded-3xl`}
     >
       {props.children}
     </div>
@@ -94,7 +178,7 @@ export default function Portfolio() {
     useSensor(PointerSensor, {
       activationConstraint: {
         // On mobile, require a 250ms press before dragging starts
-        // On desktop (distance), it stays snappy
+        // This allows the user to swipe (scroll) without triggering a drag immediately
         delay: 250,
         tolerance: 5,
       },
@@ -120,7 +204,7 @@ export default function Portfolio() {
     switch (id) {
       case 'identity':
         return (
-          <div className="h-full bg-zinc-900/50 border border-zinc-800 rounded-3xl p-6 md:p-8 flex flex-col justify-between hover:border-zinc-700 transition-colors group">
+          <div className="h-full bg-zinc-900/50 backdrop-blur-md border border-zinc-800 rounded-3xl p-6 md:p-8 flex flex-col justify-between hover:border-zinc-700 transition-colors group">
             <div>
               <div className="flex items-center gap-3 mb-6">
                 <div className="relative">
@@ -147,7 +231,7 @@ export default function Portfolio() {
         );
       case 'location':
         return (
-          <div className="h-full bg-zinc-900/50 border border-zinc-800 rounded-3xl p-6 flex flex-col justify-between hover:border-zinc-700 transition-colors relative overflow-hidden">
+          <div className="h-full bg-zinc-900/50 backdrop-blur-md border border-zinc-800 rounded-3xl p-6 flex flex-col justify-between hover:border-zinc-700 transition-colors relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent"></div>
             <div className="relative z-10">
               <div className="flex justify-between items-start mb-4">
@@ -184,10 +268,10 @@ export default function Portfolio() {
         return (
           <div
             onClick={() => setSelectedItem('experience')}
-            className="h-full bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8 hover:border-zinc-500 transition-all cursor-pointer group relative"
+            className="h-full bg-zinc-900/50 backdrop-blur-md border border-zinc-800 rounded-3xl p-8 hover:border-zinc-500 transition-all cursor-pointer group relative"
           >
-            {/* Expand icon moved to bottom right */}
-            <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-indigo-400 bg-zinc-900/80 p-2 rounded-full border border-zinc-700 backdrop-blur-sm z-10">
+            {/* CHANGED: Removed opacity toggles. Icon is now persistent. */}
+            <div className="absolute bottom-6 right-6 text-indigo-400 bg-zinc-900/80 p-2 rounded-full border border-zinc-700 backdrop-blur-sm z-10 shadow-lg">
               <Maximize2 size={16} />
             </div>
 
@@ -200,7 +284,7 @@ export default function Portfolio() {
               <ExperienceItem
                 role="Lead Full Stack Engineer"
                 company="Watches-House"
-                link="wwww.watches-house.com"
+                link="https://www.watches-house.com"
                 date="2025 — Present"
                 desc="Supabase, Cloudflare & Automations."
                 highlight={true}
@@ -219,10 +303,10 @@ export default function Portfolio() {
         return (
           <div
             onClick={() => setSelectedItem('uni-projects')}
-            className="h-full bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8 flex flex-col hover:border-zinc-500 transition-all cursor-pointer group relative"
+            className="h-full bg-zinc-900/50 backdrop-blur-md border border-zinc-800 rounded-3xl p-8 flex flex-col hover:border-zinc-500 transition-all cursor-pointer group relative"
           >
-            {/* Expand icon */}
-            <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-indigo-400 bg-zinc-900/80 p-2 rounded-full border border-zinc-700 backdrop-blur-sm z-10">
+            {/* CHANGED: Removed opacity toggles. Icon is now persistent. */}
+            <div className="absolute bottom-6 right-6 text-indigo-400 bg-zinc-900/80 p-2 rounded-full border border-zinc-700 backdrop-blur-sm z-10 shadow-lg">
               <Maximize2 size={16} />
             </div>
 
@@ -292,7 +376,7 @@ export default function Portfolio() {
         );
       case 'certs':
         return (
-          <div className="h-full bg-zinc-900/50 border border-zinc-800 rounded-3xl p-6 flex flex-col justify-between hover:border-zinc-700 transition-colors">
+          <div className="h-full bg-zinc-900/50 backdrop-blur-md border border-zinc-800 rounded-3xl p-6 flex flex-col justify-between hover:border-zinc-700 transition-colors">
             <div>
               <div className="flex justify-between items-start mb-6">
                 <Award className="text-zinc-500" />
@@ -317,7 +401,7 @@ export default function Portfolio() {
         );
       case 'stack':
         return (
-          <div className="h-full bg-zinc-900/50 border border-zinc-800 rounded-3xl p-6 hover:border-zinc-700 transition-colors">
+          <div className="h-full bg-zinc-900/50 backdrop-blur-md border border-zinc-800 rounded-3xl p-6 hover:border-zinc-700 transition-colors">
             <div className="flex justify-between items-start mb-6">
               <Code2 className="text-zinc-500" />
               <span className="text-xs font-mono text-zinc-500">STACK</span>
@@ -339,10 +423,8 @@ export default function Portfolio() {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-200 font-sans selection:bg-indigo-500/30">
 
-      {/* Background Noise Texture */}
-      <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none"
-        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}>
-      </div>
+      {/* NEW: Glowing Wave Background */}
+      <GlowingWaveBackground />
 
       <main className="relative z-10 max-w-[1200px] mx-auto p-4 md:p-8 lg:p-12">
 
