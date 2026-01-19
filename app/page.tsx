@@ -200,12 +200,14 @@ export default function Portfolio() {
               <ExperienceItem
                 role="Lead Full Stack Engineer"
                 company="Watches-House"
+                link="wwww.watches-house.com"
                 date="2025 — Present"
                 desc="Supabase, Cloudflare & Automations."
                 highlight={true}
               />
               <ExperienceItem
                 role="Software Eng. Intern"
+                link=""
                 company="UMCH TECH"
                 date="2024 — 2025"
                 desc="Vue.js & Flutter Development."
@@ -299,11 +301,15 @@ export default function Portfolio() {
               <div className="space-y-4">
                 <div>
                   <h4 className="text-sm font-medium text-white leading-tight">AWS Certified Cloud Practitioner</h4>
-                  <p className="text-xs font-mono text-zinc-500 mt-1">2025</p>
+                  <p className="text-xs font-mono text-zinc-500 mt-1">2025 <a href="https://www.credly.com/badges/0a719f6a-989a-4d28-9d1f-dbe9f6327b3d/public_url">Credly Link</a></p>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium text-white leading-tight">Cisco CCNA: Introduction to Networks</h4>
-                  <p className="text-xs font-mono text-zinc-500 mt-1">2022</p>
+                  <h4 className="text-sm font-medium text-white leading-tight"><a>AWS Educate Machine Learning Foundations - Training Badge</a></h4>
+                  <p className="text-xs font-mono text-zinc-500 mt-1">2025 <a href="https://www.credly.com/badges/a5c86883-a73a-4e09-a196-d62ac1fae8f2/public_url">Credly Link</a></p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-white leading-tight">Cisco CCNA: Introduction to Networks</h4> 
+                  <p className="text-xs font-mono text-zinc-500 mt-1">2022 <a href="https://www.credly.com/badges/039838e8-8a95-4f3b-8078-43c855e5c299/public_url">Credly Link</a></p>
                 </div>
               </div>
             </div>
@@ -392,7 +398,7 @@ function SocialButton({ icon, href, label }: { icon: React.ReactNode, href: stri
   );
 }
 
-function ExperienceItem({ role, company, date, desc, highlight }: { role: string, company: string, date: string, desc: string, highlight?: boolean }) {
+function ExperienceItem({ role,link, company, date, desc, highlight }: { role: string,link: string, company: string, date: string, desc: string, highlight?: boolean }) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-baseline justify-between group/item">
       <div className="sm:w-1/3 mb-1 sm:mb-0">
@@ -415,16 +421,26 @@ function ModalOverlay({ id, onClose }: { id: string, onClose: () => void }) {
   if (id === 'experience') {
     content = (
       <div className="space-y-12">
-
         {/* --- WATCHES HOUSE --- */}
         <div className="space-y-6">
           <div className="border-b border-zinc-800 pb-4">
             <div className="flex justify-between items-start">
+              <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-3xl font-bold text-white mb-2">Watches-House</h2>
-                <p className="text-xl text-indigo-400 font-medium">Lead Full Stack Engineer</p>
+                <h2 className="text-3xl font-bold text-white mb-1">
+                  Watches-House
+                </h2>
+                <h3><a href="https://www.watches-house.com">watches-house.com</a></h3>
+                <p className="text-xl text-indigo-400 font-medium mt-1">
+                  Lead Full Stack Engineer
+                </p>
               </div>
-              <span className="hidden sm:block px-3 py-1 bg-zinc-800 rounded-full text-xs font-mono text-zinc-400 border border-zinc-700">2025 — Present</span>
+
+              <span className="hidden sm:block px-3 py-1 bg-zinc-800 rounded-full text-xs font-mono text-zinc-400 border border-zinc-700">
+                2025 — Present
+              </span>
+            </div>
+
             </div>
             <div className="flex gap-2 mt-4 flex-wrap">
               {['Supabase', 'Cloudflare', 'Next.js', 'FIB SDK', 'GitHub Actions'].map(t => (
@@ -537,6 +553,7 @@ function ModalOverlay({ id, onClose }: { id: string, onClose: () => void }) {
           <div className="space-y-4 flex-1">
             <div className="flex items-center gap-3">
               <h3 className="text-3xl font-bold text-white">br-todo</h3>
+              <h4><a href="https://github.com/Barahiz/brTodo.git">Github/br-todo</a></h4>
               <span className="px-3 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-medium">Flutter + Firebase</span>
             </div>
             <p className="text-zinc-300 leading-relaxed max-w-2xl">
