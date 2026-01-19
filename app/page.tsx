@@ -64,9 +64,9 @@ function GlowingWaveBackground() {
     resize();
 
     // Configuration
-    const gap = 20; // Distance between dots
+    const gap = 30; // Distance between dots
     const baseRadius = 1;
-    const waveSpeed = 0.07;
+    const waveSpeed = 0.05;
 
     const render = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
